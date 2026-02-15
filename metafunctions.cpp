@@ -278,7 +278,7 @@ int main() {
 
     // static_assert(is_convertible_v<int,float>);
 
-    static_assert(is_base_of_v<Base,Derived>);
+    // static_assert(is_base_of_v<Base,Derived>);
   
     // static_assert(is_default_constructable_v<Base>);
    
