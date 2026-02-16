@@ -218,16 +218,16 @@ template <typename T>
 constexpr static bool has_operator_plus_v = has_operator_plus<T>::value;
 
 // //decay version1
-template <typename T>
-struct decay {
-    using U = remove_reference_t<T>;
-    using type = std::conditional_t<std::is_array_v<U>,std::remove_extent_t<U>*, 
-    std::conditional_t<std::is_function_v<U>, U*, 
-    remove_const_t<std::remove_volatile_t<U>>>>;
-};
+// template <typename T>
+// struct decay {
+//     using U = remove_reference_t<T>;
+//     using type = std::conditional_t<std::is_array_v<U>,std::remove_extent_t<U>*, 
+//     std::conditional_t<std::is_function_v<U>, U*, 
+//     remove_const_t<std::remove_volatile_t<U>>>>;
+// };
 
-template <typename T>
-using decay_t = typename decay<T>::type;
+// template <typename T>
+// using decay_t = typename decay<T>::type;
 
 //decay version2
 template <typename T>
@@ -254,7 +254,88 @@ struct decay<T(Types... args)> {
 template <typename T>
 using decay_t = typename decay<T>::type;
 
+//factorial
+template <size_t N>
+struct factorial {
+    constexpr static int value = (N * factorial<N - 1>::value);
+};
+
+template <>
+struct factorial<0> {
+    constexpr static int value = 1;
+};
+
+//fibonachi
+template <int N>
+struct fibonachi {
+    constexpr static int value = (fibonachi<N - 1>::value + fibonachi<N - 2>::value);
+};
+
+template <>
+struct fibonachi<0> {
+    constexpr static int value = 0;
+};
+
+template <>
+struct fibonachi<1> {
+    constexpr static int value = 1;
+};
+
+//is_prime
+template <int N, int D>
+struct is_prime_helper {
+    constexpr static bool value = (N % D) && (is_prime_helper<N,D - 1>::value);
+};
+
+template <int N>
+struct is_prime_helper<N,1> {
+    constexpr static bool value = true;
+};
+
+template <int N>
+struct is_prime {
+    constexpr static bool value = is_prime_helper<N,N / 2>::value;
+};
+
+template <>
+struct is_prime<1> {
+    constexpr static bool value = false;
+};
+
+template <>
+struct is_prime<0> {
+    constexpr static bool value = false;
+};
+
+//next_prime
+template <int N, bool B>
+struct next_prime_helper {
+    constexpr static size_t value = next_prime_helper<N + 1,is_prime<N + 1>::value>::value;
+};
+
+template <int N>
+struct next_prime_helper<N, true> {
+    constexpr static size_t value = N;
+};
+
+template <int N>
+struct next_prime {
+    constexpr static size_t value = next_prime_helper<N,false>::value;
+};
+
+//unique_type
+template <typename T,typename... Types>
+struct unique_types {
+    constexpr static bool value = (!(... || is_same_v<T,Types>)) && (unique_types<Types...>::value);
+};
+
+template <typename T>
+struct unique_types<T> {
+    constexpr static bool value = true;
+};
+
 int main() {
+
     // static_assert(is_same_v<int,int>);
     // static_assert(is_same_v<int,double>, "Error");
 
@@ -285,6 +366,16 @@ int main() {
     // static_assert(has_operator_plus_v<Derived>);
 
     // static_assert(is_same_v<decay_t<void (int)>, void(*)(int)>);
+    
+    // std::cout << factorial<5>::value << std::endl;
+   
+    // std::cout << fibonachi<7>::value << std::endl;
+
+    // std::cout << is_prime<4>::value << std::endl;
+
+    // std::cout << next_prime<1>::value << std::endl;
+  
+    // std::cout << unique_types<int,double,float,bool>::value << std::endl;
 
     return 0;
 }
