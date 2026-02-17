@@ -81,31 +81,11 @@ struct add_lvalue_reference {
 };
 
 template <typename T>
-struct add_lvalue_reference<T&> {
-    using type = T&;
-};
-
-template <typename T>
-struct add_lvalue_reference<T&&> {
-    using type = T&;
-};
-
-template <typename T>
 using add_lvalue_reference_t = typename add_lvalue_reference<T>::type;
 
 //add_rvalue_reference
 template <typename T>
 struct add_rvalue_reference {
-    using type = T&&;
-};
-
-template <typename T>
-struct add_rvalue_reference<T&> {
-    using type = T&;
-};
-
-template <typename T>
-struct add_rvalue_reference<T&&> {
     using type = T&&;
 };
 
